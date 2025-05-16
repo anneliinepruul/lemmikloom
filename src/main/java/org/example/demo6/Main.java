@@ -13,9 +13,9 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     // Muuda tee vastavalt sellele, kuhu salvestasid pildi
-    private static final String IMAGE_PATH = "file:/Users/4nn33/Library/CloudStorage/OneDrive-Personal/KOOL/ülikooli asjad/oop/demo6/_.jpeg";
+    private static final String IMAGE_PATH = "file:/Users/4nn33/Library/CloudStorage/OneDrive-Personal/KOOL/ülikooli asjad/oop/demo6/pixil-frame-0 (7).png";
 
-    private static final int PIXEL_SIZE = 2;
+    private static final int PIXEL_SIZE = 10;
 
     @Override
     public void start(Stage stage) {
