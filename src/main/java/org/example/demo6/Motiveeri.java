@@ -1,12 +1,11 @@
 package org.example.demo6;
 
 import javafx.scene.canvas.Canvas;
-
 import java.util.List;
 import java.util.Random;
 
 public class Motiveeri {
-    private static final String IMAGE = "file:/C:/Users/paan/IdeaProjects/lemmikloom/___.png";
+    private static final String IMAGE = "/kassipildid/kass_tsitaat.png";
     private static final List<String> QUOTES = List.of(
             "Sa pole väsinud õppimisest, vaid sellest, et unustad, miks õpid.",
             "Kui sa täna ei õpi, siis keegi teine võtab su unistuste töökoha.",

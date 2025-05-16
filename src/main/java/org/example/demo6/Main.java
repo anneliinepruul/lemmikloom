@@ -2,6 +2,7 @@ package org.example.demo6;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -17,9 +18,7 @@ import javafx.util.Duration;
 import javafx.animation.PauseTransition;
 
 public class Main extends Application {
-
-    // Muuda tee vastavalt sellele, kuhu salvestasid pildi
-
+    private static final String DEFAULT_IMAGE = "/kassipildid/kass.png";
     private static final int PIXEL_SIZE = 10;
 
     private Canvas canvas;
@@ -28,15 +27,22 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        Image image = new Image(getClass().getResource("/kassipildid/kass.png").toExternalForm());
-        int width = (int) image.getWidth();
-        int height = (int) image.getHeight();
         root = new BorderPane();
         canvas = new Canvas();
         root.setCenter(canvas);
 
+        // ★ Suur ja keskele joondatud tsitaat
         quoteLabel = new Label();
-        quoteLabel.setStyle("-fx-font-size: 16px; -fx-padding: 10; -fx-text-fill: darkmagenta;");
+        quoteLabel.setStyle("""
+            -fx-font-size: 64px;
+            -fx-padding: 20;
+            -fx-text-fill: darkmagenta;
+            -fx-font-weight: bold;
+        """);
+        quoteLabel.setMaxWidth(Double.MAX_VALUE);
+        quoteLabel.setWrapText(true);
+        quoteLabel.setAlignment(Pos.CENTER);
+        BorderPane.setAlignment(quoteLabel, Pos.CENTER);
         root.setTop(quoteLabel);
 
         lisaNupud();
@@ -74,17 +80,16 @@ public class Main extends Application {
         return nupp;
     }
 
-    public void kuvaPilt(String imagePath) {
-        Image image = new Image(imagePath);
+    public void kuvaPilt(String resourcePath) {
+        Image image = new Image(getClass().getResourceAsStream(resourcePath));
         canvas.setWidth(image.getWidth() * PIXEL_SIZE);
         canvas.setHeight(image.getHeight() * PIXEL_SIZE);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        // ⛔ Oluline! Tühjenda enne joonistamist
+        // Tühjenda canvas enne uut joonistamist
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         PixelReader reader = image.getPixelReader();
-
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
                 Color color = reader.getColor(x, y);
@@ -96,8 +101,8 @@ public class Main extends Application {
         }
     }
 
-    public void kuvaPiltAjutiselt(String imagePath, int sekundid) {
-        kuvaPilt(imagePath);
+    public void kuvaPiltAjutiselt(String resourcePath, int sekundid) {
+        kuvaPilt(resourcePath);
         Platform.runLater(() -> {
             PauseTransition paus = new PauseTransition(Duration.seconds(sekundid));
             paus.setOnFinished(e -> kuvaPilt(DEFAULT_IMAGE));
@@ -105,8 +110,8 @@ public class Main extends Application {
         });
     }
 
-    public void kuvaPiltJaTekstAjutiselt(String imagePath, String tekst, int sekundid) {
-        kuvaPilt(imagePath);
+    public void kuvaPiltJaTekstAjutiselt(String resourcePath, String tekst, int sekundid) {
+        kuvaPilt(resourcePath);
         quoteLabel.setText(tekst);
         Platform.runLater(() -> {
             PauseTransition paus = new PauseTransition(Duration.seconds(sekundid));
