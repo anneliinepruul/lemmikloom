@@ -17,7 +17,9 @@ import javafx.util.Duration;
 import javafx.animation.PauseTransition;
 
 public class Main extends Application {
-    private static final String DEFAULT_IMAGE = "file:/C:/Users/paan/IdeaProjects/lemmikloom/pixil-frame-0%20(7).png";
+
+    // Muuda tee vastavalt sellele, kuhu salvestasid pildi
+
     private static final int PIXEL_SIZE = 10;
 
     private Canvas canvas;
@@ -26,6 +28,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        Image image = new Image(getClass().getResource("/kassipildid/kass.png").toExternalForm());
+        int width = (int) image.getWidth();
+        int height = (int) image.getHeight();
         root = new BorderPane();
         canvas = new Canvas();
         root.setCenter(canvas);
