@@ -27,7 +27,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        Logija.puhastaLogi(); // ✅ logifail tühjendatakse iga käivituse alguses
+        Logija.puhastaLogi(); // logifail tühjendatakse iga käivituse alguses
 
         tuvustavTekst = new Label();
         tuvustavTekst.setStyle("""
@@ -75,7 +75,7 @@ public class Main extends Application {
         // Tutvustav tekst
         tuvustavTekst.setText(
                 "See on sinu uus lemmikloom. Teda saab toita, paitada või küsida temalt motiveerivaid tsitaate.\n" +
-                        "Selleks saab vajutada vastavaid nuppe või vajutada klaviatuuril T, P, M klahve." +
+                        "Selleks saab vajutada vastavaid nuppe või vajutada klaviatuuril T, P, M klahve.\n" +
                         "Alustamiseks vajuta all olevat nuppu või tühiku klahvi!"
         );
 

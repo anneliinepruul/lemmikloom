@@ -1,6 +1,5 @@
-2025-05-19 12:09:05 - Toideti kassi
-2025-05-19 12:09:09 - Paitati kassi
-2025-05-19 12:09:12 - Motiveeriti õppima
-2025-05-19 12:09:14 - Motiveeriti õppima
-2025-05-19 12:09:18 - Motiveeriti õppima
-2025-05-19 12:09:19 - Motiveeriti õppima
+2025-05-19 12:08:58 - Toideti kassi
+2025-05-19 12:09:00 - Paitati kassi
+2025-05-19 12:09:00 - Motiveeriti õppima
+2025-05-19 12:09:01 - ValeKlahvErind: vajutati 'f'
+2025-05-19 12:09:01 - Erind: Lubatud on ainult klahvid 't', 'p' ja 'm'. Vajutati: 'f'
