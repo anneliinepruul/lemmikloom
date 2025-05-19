@@ -1,5 +1,6 @@
 package org.example.demo6;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -10,62 +11,123 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.animation.PauseTransition;
+import javafx.scene.control.Alert;
+
+
 
 public class Main extends Application {
-    private static final String DEFAULT_IMAGE = "/kassipildid/kass.png";
-    private static final int PIXEL_SIZE = 10;
+    private static final String pilt = "/kassipildid/kass.png";
+    private static final int piksliSuurus = 10;
 
     private Canvas canvas;
-    private BorderPane root;
-    private Label quoteLabel;
+    private Label tuvustavTekst;
+    private Image praegunePilt;
+
 
     @Override
     public void start(Stage stage) {
-        root = new BorderPane();
+        tuvustavTekst = new Label();
+        tuvustavTekst.setStyle("""
+        -fx-font-size: 24px;
+        -fx-padding: 20;
+        -fx-text-fill: darkmagenta;
+        -fx-font-weight: bold;
+    """);
+        tuvustavTekst.setMaxWidth(Double.MAX_VALUE);
+        tuvustavTekst.setWrapText(true);
+        tuvustavTekst.setAlignment(Pos.CENTER);
+
         canvas = new Canvas();
-        root.setCenter(canvas);
 
-        // ★ Suur ja keskele joondatud tsitaat
-        quoteLabel = new Label();
-        quoteLabel.setStyle("""
-            -fx-font-size: 64px;
-            -fx-padding: 20;
-            -fx-text-fill: darkmagenta;
-            -fx-font-weight: bold;
-        """);
-        quoteLabel.setMaxWidth(Double.MAX_VALUE);
-        quoteLabel.setWrapText(true);
-        quoteLabel.setAlignment(Pos.CENTER);
-        BorderPane.setAlignment(quoteLabel, Pos.CENTER);
-        root.setTop(quoteLabel);
+        StackPane canvasWrapper = new StackPane(canvas);
+        StackPane.setAlignment(canvas, Pos.CENTER);
+        canvasWrapper.setStyle("-fx-background-color: white;");
+        canvasWrapper.setMinHeight(100);
 
-        lisaNupud();
-        kuvaPilt(DEFAULT_IMAGE);
+        // Alusta nupp
+        Button alustaNupp = looRoosaNupp("Alusta");
+        HBox alustaBox = new HBox(alustaNupp);
+        alustaBox.setAlignment(Pos.CENTER);
+        alustaBox.setStyle("-fx-padding: 20;");
+
+        // Põhinupud
+        Button toidaNupp = looRoosaNupp("(T)oida");
+        Button paitaNupp = looRoosaNupp("(P)aita");
+        Button motiveeriNupp = looRoosaNupp("(M)otiveeri õppima");
+
+        HBox nupudBox = new HBox(20, toidaNupp, paitaNupp, motiveeriNupp);
+        nupudBox.setAlignment(Pos.CENTER);
+        nupudBox.setStyle("-fx-padding: 20;");
+        nupudBox.setVisible(false); // Nupud on alguses peidetud
+
+
+        VBox root = new VBox();
+        root.getChildren().addAll(tuvustavTekst, canvasWrapper, alustaBox, nupudBox);
+        VBox.setVgrow(canvasWrapper, Priority.ALWAYS);
 
         Scene scene = new Scene(root, 800, 600);
-        stage.setTitle("Lemmikloom: JavaFX GUI");
+        stage.setTitle("Lemmikloom");
         stage.setScene(scene);
         stage.show();
-    }
 
-    private void lisaNupud() {
-        Button toidaBtn = looRoosaNupp("Toida");
-        Button paitaBtn = looRoosaNupp("Paita");
-        Button motiveeriBtn = looRoosaNupp("Motiveeri õppima");
+        // Tutvustav tekst
+        tuvustavTekst.setText(
+                "See on sinu uus lemmikloom. Teda saab toita, paitada või küsida temalt motiveerivaid tsitaate.\n" +
+                        "Selleks saab vajutada vastavaid nuppe või vajutada klaviatuuril T, P, M klahve."
+        );
 
-        toidaBtn.setOnAction(e -> new Toida().kuva(canvas, this));
-        paitaBtn.setOnAction(e -> new Paita().kuva(canvas, this));
-        motiveeriBtn.setOnAction(e -> new Motiveeri().kuva(canvas, this));
+        // Alusta nupp
+        alustaNupp.setOnAction(e -> {
+            tuvustavTekst.setText("");
+            alustaBox.setVisible(false);
+            nupudBox.setVisible(true);
+        });
 
-        HBox nupud = new HBox(20, toidaBtn, paitaBtn, motiveeriBtn);
-        nupud.setStyle("-fx-alignment: center; -fx-padding: 20;");
-        root.setBottom(nupud);
+        // Pildi kuvamine
+        canvasWrapper.widthProperty().addListener((obs, oldVal, newVal) -> joonistaUuesti());
+        canvasWrapper.heightProperty().addListener((obs, oldVal, newVal) -> joonistaUuesti());
+        kuvaPilt(pilt);
+
+        // Nuppude tegevused
+        toidaNupp.setOnAction(e -> {
+            new Toida().kuva(canvas, this);
+            Logija.logi("Toideti kassi");
+        });
+
+        paitaNupp.setOnAction(e -> {
+            new Paita().kuva(canvas, this);
+            Logija.logi("Paitati kassi");
+        });
+
+        motiveeriNupp.setOnAction(e -> {
+            new Motiveeri().kuva(canvas, this);
+            Logija.logi("Motiveeriti õppima");
+        });
+
+        // Klaviatuuri sisend
+        scene.setOnKeyPressed(event -> {
+            String klahv = event.getText().toLowerCase();
+            if (!nupudBox.isVisible()) return; // Klahvid ei tööta enne alustamist
+
+            try {
+                switch (klahv) {
+                    case "t" -> toidaNupp.fire();
+                    case "p" -> paitaNupp.fire();
+                    case "m" -> motiveeriNupp.fire();
+                    default -> throw new ValeKlahvErind(event.getText().charAt(0));
+                }
+            } catch (ValeKlahvErind e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Valet klahv");
+                alert.setHeaderText(null);
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
+            }
+        });
     }
 
     private Button looRoosaNupp(String tekst) {
@@ -81,46 +143,62 @@ public class Main extends Application {
     }
 
     public void kuvaPilt(String resourcePath) {
-        Image image = new Image(getClass().getResourceAsStream(resourcePath));
-        canvas.setWidth(image.getWidth() * PIXEL_SIZE);
-        canvas.setHeight(image.getHeight() * PIXEL_SIZE);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        // Tühjenda canvas enne uut joonistamist
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
-        PixelReader reader = image.getPixelReader();
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                Color color = reader.getColor(x, y);
-                if (color.getOpacity() > 0.05) {
-                    gc.setFill(color);
-                    gc.fillRect(x * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
-                }
-            }
-        }
+        praegunePilt = new Image(getClass().getResourceAsStream(resourcePath));
+        joonistaUuesti();
     }
 
     public void kuvaPiltAjutiselt(String resourcePath, int sekundid) {
         kuvaPilt(resourcePath);
         Platform.runLater(() -> {
             PauseTransition paus = new PauseTransition(Duration.seconds(sekundid));
-            paus.setOnFinished(e -> kuvaPilt(DEFAULT_IMAGE));
+            paus.setOnFinished(e -> kuvaPilt(pilt));
             paus.play();
         });
     }
 
     public void kuvaPiltJaTekstAjutiselt(String resourcePath, String tekst, int sekundid) {
         kuvaPilt(resourcePath);
-        quoteLabel.setText(tekst);
+        tuvustavTekst.setText(tekst);
         Platform.runLater(() -> {
             PauseTransition paus = new PauseTransition(Duration.seconds(sekundid));
             paus.setOnFinished(e -> {
-                kuvaPilt(DEFAULT_IMAGE);
-                quoteLabel.setText("");
+                kuvaPilt(pilt);
+                tuvustavTekst.setText("");
             });
             paus.play();
         });
+    }
+
+    private void joonistaUuesti() {
+        if (praegunePilt == null || canvas.getScene() == null) return;
+
+        double width = ((Region) canvas.getParent()).getWidth();
+        double height = ((Region) canvas.getParent()).getHeight();
+
+        canvas.setWidth(width);
+        canvas.setHeight(height);
+
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, width, height);
+
+        PixelReader reader = praegunePilt.getPixelReader();
+        int laius = (int) praegunePilt.getWidth();
+        int kõrgus = (int) praegunePilt.getHeight();
+
+        double drawL = laius * piksliSuurus;
+        double drawK = kõrgus * piksliSuurus;
+        double offsetX = Math.max((width - drawL) / 2, 0);
+        double offsetY = Math.max((height - drawK) / 2, 0);
+
+        for (int y = 0; y < kõrgus; y++) {
+            for (int x = 0; x < laius; x++) {
+                Color color = reader.getColor(x, y);
+                if (color.getOpacity() > 0.05) {
+                    gc.setFill(color);
+                    gc.fillRect(offsetX + x * piksliSuurus, offsetY + y * piksliSuurus, piksliSuurus, piksliSuurus);
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
