@@ -7,13 +7,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Logija {
-    private static final String FAILINIMI = "logi.txt";
+    private static final String failiNimi = "logi.txt";
 
     public static void logi(String tegevus) {
         String aeg = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String rida = aeg + " - " + tegevus;
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FAILINIMI, true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(failiNimi, true))) {
             writer.write(rida);
             writer.newLine();
         } catch (IOException e) {
@@ -23,7 +23,7 @@ public class Logija {
 
     public static List<String> loKoguLogi() {
         try {
-            return Files.readAllLines(Paths.get(FAILINIMI));
+            return Files.readAllLines(Paths.get(failiNimi));
         } catch (IOException e) {
             e.printStackTrace();
             return List.of();
@@ -32,7 +32,7 @@ public class Logija {
 
     public static void puhastaLogi() {
         try {
-            Files.write(Paths.get(FAILINIMI), new byte[0], StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(Paths.get(failiNimi), new byte[0], StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
         }
