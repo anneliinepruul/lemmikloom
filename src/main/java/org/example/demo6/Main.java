@@ -17,8 +17,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.control.Alert;
 
-
-
 public class Main extends Application {
     private static final String pilt = "/kassipildid/kass.png";
     private static final int piksliSuurus = 10;
@@ -27,16 +25,17 @@ public class Main extends Application {
     private Label tuvustavTekst;
     private Image praegunePilt;
 
-
     @Override
     public void start(Stage stage) {
+        Logija.puhastaLogi(); // ✅ logifail tühjendatakse iga käivituse alguses
+
         tuvustavTekst = new Label();
         tuvustavTekst.setStyle("""
-        -fx-font-size: 24px;
-        -fx-padding: 20;
-        -fx-text-fill: darkmagenta;
-        -fx-font-weight: bold;
-    """);
+            -fx-font-size: 24px;
+            -fx-padding: 20;
+            -fx-text-fill: darkmagenta;
+            -fx-font-weight: bold;
+        """);
         tuvustavTekst.setMaxWidth(Double.MAX_VALUE);
         tuvustavTekst.setWrapText(true);
         tuvustavTekst.setAlignment(Pos.CENTER);
@@ -64,7 +63,6 @@ public class Main extends Application {
         nupudBox.setStyle("-fx-padding: 20;");
         nupudBox.setVisible(false); // Nupud on alguses peidetud
 
-
         VBox root = new VBox();
         root.getChildren().addAll(tuvustavTekst, canvasWrapper, alustaBox, nupudBox);
         VBox.setVgrow(canvasWrapper, Priority.ALWAYS);
@@ -77,7 +75,8 @@ public class Main extends Application {
         // Tutvustav tekst
         tuvustavTekst.setText(
                 "See on sinu uus lemmikloom. Teda saab toita, paitada või küsida temalt motiveerivaid tsitaate.\n" +
-                        "Selleks saab vajutada vastavaid nuppe või vajutada klaviatuuril T, P, M klahve."
+                        "Selleks saab vajutada vastavaid nuppe või vajutada klaviatuuril T, P, M klahve." +
+                        "Alustamiseks vajuta all olevat nuppu või tühiku klahvi!"
         );
 
         // Alusta nupp
@@ -121,8 +120,9 @@ public class Main extends Application {
                     default -> throw new ValeKlahvErind(event.getText().charAt(0));
                 }
             } catch (ValeKlahvErind e) {
+                Logija.logi("Erind: " + e.getMessage()); // ✅ lisatud logimine vale klahvi korral
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Valet klahv");
+                alert.setTitle("Vale klahv");
                 alert.setHeaderText(null);
                 alert.setContentText(e.getMessage());
                 alert.showAndWait();
