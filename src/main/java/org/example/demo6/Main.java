@@ -120,7 +120,7 @@ public class Main extends Application {
                     default -> throw new ValeKlahvErind(event.getText().charAt(0));
                 }
             } catch (ValeKlahvErind e) {
-                Logija.logi("Erind: " + e.getMessage()); // ✅ lisatud logimine vale klahvi korral
+                Logija.logi("Erind: " + e.getMessage()); //  lisatud logimine vale klahvi korral
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Vale klahv");
                 alert.setHeaderText(null);
